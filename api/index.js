@@ -6,10 +6,10 @@ import serverless from "serverless-http";
 import CipherSchema from "../src/schemas/cipher.schemas.js";
 
 // Utils
-import { convertToJson } from "../utils/middleware/convert-to-json.js";
+import { convertToJson } from "../src/utils/middleware/convert-to-json.js";
 
 // Services
-import { databaseConnect } from "../services/database-connect.js";
+import { databaseConnect } from "../src/services/database-connect.js";
 
 const app = express();
 
