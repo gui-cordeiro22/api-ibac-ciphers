@@ -8,7 +8,8 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "tsx src/api.ts"
+    "dev": "tsx src/api.ts",
+    "build": "tsup src"
   },
   "keywords": [],
   "author": "",
