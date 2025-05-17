@@ -3,7 +3,7 @@ import express from "express";
 import serverless from "serverless-http";
 
 // Schemas
-import CipherSchema from "../schemas/cipher.schemas.js";
+import CipherSchema from "../src/schemas/cipher.schemas.js";
 
 // Utils
 import { convertToJson } from "../utils/middleware/convert-to-json.js";
