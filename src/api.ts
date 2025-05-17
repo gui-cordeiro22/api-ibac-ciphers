@@ -20,9 +20,11 @@ databaseConnect();
 app.post("/cifras/criar", async (req, res) => {
   try {
     const newCipher = await CipherSchema.create(req.body);
+
     res.json(newCipher);
   } catch (error) {
     res.json({ error: error });
+
     console.error(`Erro ao criar uma nova cifra - ${error}`);
   }
 });
@@ -30,9 +32,11 @@ app.post("/cifras/criar", async (req, res) => {
 app.get("/cifras", async (req, res) => {
   try {
     const ciphers = await CipherSchema.find();
+
     res.json(ciphers);
   } catch (error) {
     res.json({ error: error });
+
     console.error(`Erro ao buscar cifras - ${error}`);
   }
 });
@@ -41,8 +45,10 @@ app.put("/cifras/:id", async (req, res) => {
   try {
     const updatedCipher = await CipherSchema.findByIdAndUpdate(
       req.params.id,
+
       req.body
     );
+
     res.json(updatedCipher);
   } catch (error: any) {
     res.json({ error: error.message });
@@ -56,6 +62,7 @@ app.get("/", async (req, res) => {
     );
   } catch (error) {
     res.json({ error: error });
+
     console.error(`Erro ao buscar cifras - ${error}`);
   }
 });
