@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "engines": {
+    "node": "18"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "tsx src/api.ts"
@@ -16,6 +19,7 @@
     "express": "^5.1.0",
     "mongoose": "^8.15.0",
     "serverless-http": "^3.2.0",
+    "tsup": "^8.5.0",
     "typescript": "^5.8.3"
   },
   "devDependencies": {
