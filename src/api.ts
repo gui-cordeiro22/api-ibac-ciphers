@@ -67,4 +67,6 @@ app.get("/", async (req, res) => {
   }
 });
 
-app.listen(apiPort, () => console.log(`HTTP Server runing on ${apiPort}`));
+app.listen(!!apiPort ? Number(apiPort) : 3333, () =>
+  console.log(`HTTP Server runing on ${apiPort}`)
+);
