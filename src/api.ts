@@ -3,13 +3,13 @@ import express from "express";
 import serverless from "serverless-http";
 
 // Schemas
-import CipherSchema from "./schemas/cipher.schemas.js";
+import CipherSchema from "./schemas/cipher.schemas.ts";
 
 // Utils
-import { convertToJson } from "./utils/middleware/convert-to-json.js";
+import { convertToJson } from "./utils/middleware/convert-to-json.ts";
 
 // Services
-import { databaseConnect } from "./services/database-connect.js";
+import { databaseConnect } from "./services/database-connect.ts";
 
 const app = express();
 
