@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "functions": {
+    "api/index.js": {
+      "includeFiles": [
+        "api/schemas/**",
+        "api/utils/**",
+        "api/services/**",
+        "api/constants/**"
+      ]
+    }
+  }
+}
