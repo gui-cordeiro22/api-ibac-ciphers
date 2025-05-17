@@ -10,10 +10,13 @@ import { apiPort } from "./constants/constants.ts";
 
 // Services
 import { databaseConnect } from "./services/database-connect.ts";
+import { corsConfig } from "./utils/middleware/cors-config.ts";
 
 const app = express();
 
 convertToJson(app);
+
+corsConfig(app);
 
 databaseConnect();
 
