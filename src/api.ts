@@ -1,18 +1,17 @@
 // Dependencies
 import express from "express";
-import serverless from "serverless-http";
 
 // Schemas
 import CipherSchema from "./schemas/cipher.schemas.ts";
 
 // Utils
 import { convertToJson } from "./utils/middleware/convert-to-json.ts";
+import { apiPort } from "./constants/constants.ts";
 
 // Services
 import { databaseConnect } from "./services/database-connect.ts";
 
 const app = express();
-const PORT = 3000;
 
 convertToJson(app);
 
@@ -61,4 +60,4 @@ app.get("/", async (req, res) => {
   }
 });
 
-app.listen(PORT, () => console.log(`HTTP Server runing on ${PORT}`));
+app.listen(apiPort, () => console.log(`HTTP Server runing on ${apiPort}`));
