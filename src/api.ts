@@ -12,6 +12,7 @@ import { convertToJson } from "./utils/middleware/convert-to-json.ts";
 import { databaseConnect } from "./services/database-connect.ts";
 
 const app = express();
+const PORT = 3000;
 
 convertToJson(app);
 
@@ -44,7 +45,7 @@ app.put("/cifras/:id", async (req, res) => {
       req.body
     );
     res.json(updatedCipher);
-  } catch (error) {
+  } catch (error: any) {
     res.json({ error: error.message });
   }
 });
@@ -60,4 +61,4 @@ app.get("/", async (req, res) => {
   }
 });
 
-export default serverless(app);
+app.listen(PORT, () => console.log(`HTTP Server runing on ${PORT}`));
