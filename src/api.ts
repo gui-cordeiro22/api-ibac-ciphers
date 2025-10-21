@@ -34,9 +34,24 @@ app.post("/cifras/criar", async (req, res) => {
 
 app.get("/cifras", async (req, res) => {
   try {
-    const ciphers = await CipherSchema.find();
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = 10;
+    const skip = (page - 1) * limit;
 
-    res.json(ciphers);
+    const [ciphers, total] = await Promise.all([
+      CipherSchema.find().skip(skip).limit(limit),
+      CipherSchema.countDocuments(),
+    ]);
+
+    res.json({
+      ciphers,
+      pagination: {
+        currentPage: page,
+        totalPages: Math.ceil(total / limit),
+        totalItems: total,
+        itemsPerPage: limit,
+      },
+    });
   } catch (error) {
     res.json({ error: error });
 
@@ -58,14 +73,23 @@ app.put("/cifras/:id", async (req, res) => {
   }
 });
 
+app.get("/cifras/todos", async (req, res) => {
+  try {
+    const ciphers = await CipherSchema.find();
+    res.json(ciphers);
+  } catch (error) {
+    res.json({ error: error });
+    console.error(`Erro ao buscar todas as cifras - ${error}`);
+  }
+});
+
 app.get("/", async (req, res) => {
   try {
     res.send(
-      "API de cifras da Igreja Batista de Corrêas | 2025 - Por: Guilherme Cordeiro | Cord.io"
+      "API de cifras da Igreja Batista de Corrêas | 2025 - Por: Guilherme Cordeiro"
     );
   } catch (error) {
     res.json({ error: error });
-
     console.error(`Erro ao buscar cifras - ${error}`);
   }
 });
