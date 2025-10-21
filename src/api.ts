@@ -1,5 +1,5 @@
 // Dependencies
-import express from "express";
+import express, { Request, Response } from "express";
 
 // Schemas
 import CipherSchema from "./schemas/cipher.schemas.ts";
@@ -15,29 +15,45 @@ import { corsConfig } from "./utils/middleware/cors-config.ts";
 const app = express();
 
 convertToJson(app);
-
 corsConfig(app);
 
 databaseConnect();
 
-app.post("/cifras/criar", async (req, res) => {
-  try {
-    const newCipher = await CipherSchema.create(req.body);
+app.post(
+  "/cifras/criar",
+  async (req: Request, res: Response): Promise<void> => {
+    try {
+      const existingCipher = await CipherSchema.findOne({
+        name: req.body.name,
+        tone: req.body.tone,
+      });
 
-    res.json(newCipher);
-  } catch (error) {
-    res.json({ error: error });
+      if (existingCipher) {
+        res.status(400).json({
+          error: true,
+          message: "Já existe uma cifra cadastrada com este nome e tom.",
+        });
+        return;
+      }
 
-    console.error(`Erro ao criar uma nova cifra - ${error}`);
+      const newCipher = await CipherSchema.create(req.body);
+      res.status(201).json(newCipher);
+    } catch (error) {
+      console.error(`Erro ao criar uma nova cifra - ${error}`);
+      res.status(500).json({
+        error: true,
+        message: "Erro interno ao criar uma nova cifra",
+      });
+    }
   }
-});
+);
 
-app.get("/cifras", async (req: any, res: any) => {
+app.get("/cifras", async (req: Request, res: Response): Promise<void> => {
   try {
-    const page = parseInt(String(req.query.page)) || 1;
-    const limit = 10;
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
     const skip = (page - 1) * limit;
-    const searchTerm = String(req.query.q || "").trim();
+    const searchTerm = (req.query.q as string)?.trim() || "";
 
     const searchQuery = searchTerm
       ? { name: { $regex: searchTerm, $options: "i" } }
@@ -50,7 +66,7 @@ app.get("/cifras", async (req: any, res: any) => {
         : CipherSchema.estimatedDocumentCount(),
     ]);
 
-    return res.status(200).json({
+    res.status(200).json({
       ciphers,
       pagination: {
         currentPage: page,
@@ -72,31 +88,32 @@ app.get("/cifras", async (req: any, res: any) => {
   }
 });
 
-app.put("/cifras/:id", async (req, res) => {
+app.put("/cifras/:id", async (req: Request, res: Response): Promise<void> => {
   try {
     const updatedCipher = await CipherSchema.findByIdAndUpdate(
       req.params.id,
-
-      req.body
+      req.body,
+      { new: true }
     );
+
+    if (!updatedCipher) {
+      res.status(404).json({ error: true, message: "Cifra não encontrada" });
+      return;
+    }
 
     res.json(updatedCipher);
   } catch (error: any) {
-    res.json({ error: error.message });
+    console.error(`Erro ao atualizar cifra - ${error.message}`);
+    res.status(500).json({ error: true, message: error.message });
   }
 });
 
-app.get("/", async (req, res) => {
-  try {
-    res.send(
-      "API de cifras da Igreja Batista de Corrêas | 2025 - Por: Guilherme Cordeiro"
-    );
-  } catch (error) {
-    res.json({ error: error });
-    console.error(`Erro ao buscar cifras - ${error}`);
-  }
+app.get("/", (req: Request, res: Response): void => {
+  res.send(
+    "API de cifras da Igreja Batista de Corrêas | 2025 - Por: Guilherme Cordeiro"
+  );
 });
 
-app.listen(!!apiPort ? Number(apiPort) : 3333, () =>
-  console.log(`HTTP Server runing on ${apiPort}`)
-);
+app.listen(!!apiPort ? Number(apiPort) : 3333, () => {
+  console.log(`HTTP Server running on port ${apiPort}`);
+});
