@@ -32,18 +32,25 @@ app.post("/cifras/criar", async (req, res) => {
   }
 });
 
-app.get("/cifras", async (req, res) => {
+app.get("/cifras", async (req: any, res: any) => {
   try {
-    const page = parseInt(req.query.page as string) || 1;
+    const page = parseInt(String(req.query.page)) || 1;
     const limit = 10;
     const skip = (page - 1) * limit;
+    const searchTerm = String(req.query.q || "").trim();
+
+    const searchQuery = searchTerm
+      ? { name: { $regex: searchTerm, $options: "i" } }
+      : {};
 
     const [ciphers, total] = await Promise.all([
-      CipherSchema.find().skip(skip).limit(limit),
-      CipherSchema.countDocuments(),
+      CipherSchema.find(searchQuery).sort({ name: 1 }).skip(skip).limit(limit),
+      searchTerm
+        ? CipherSchema.countDocuments(searchQuery)
+        : CipherSchema.estimatedDocumentCount(),
     ]);
 
-    res.json({
+    return res.status(200).json({
       ciphers,
       pagination: {
         currentPage: page,
@@ -51,11 +58,17 @@ app.get("/cifras", async (req, res) => {
         totalItems: total,
         itemsPerPage: limit,
       },
+      search: searchTerm
+        ? {
+            term: searchTerm,
+            resultsCount: total,
+          }
+        : null,
     });
   } catch (error) {
-    res.json({ error: error });
-
-    console.error(`Erro ao buscar cifras - ${error}`);
+    res
+      .status(500)
+      .json({ error: true, message: "Erro interno ao buscar cifras." });
   }
 });
 
@@ -70,16 +83,6 @@ app.put("/cifras/:id", async (req, res) => {
     res.json(updatedCipher);
   } catch (error: any) {
     res.json({ error: error.message });
-  }
-});
-
-app.get("/cifras/todos", async (req, res) => {
-  try {
-    const ciphers = await CipherSchema.find();
-    res.json(ciphers);
-  } catch (error) {
-    res.json({ error: error });
-    console.error(`Erro ao buscar todas as cifras - ${error}`);
   }
 });
 
